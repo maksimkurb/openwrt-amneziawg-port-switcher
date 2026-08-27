@@ -1,0 +1,27 @@
+#!/bin/sh
+
+echo "AWG Path Optimizer"
+echo
+
+if /etc/init.d/awg-path-optimizer running >/dev/null 2>&1; then
+	echo "service: running"
+else
+	echo "service: stopped"
+fi
+
+echo
+echo "interfaces:"
+
+for iface in $(awg show interfaces 2>/dev/null); do
+	port="$(awg show "$iface" listen-port 2>/dev/null)"
+	endpoint="$(awg show "$iface" endpoints 2>/dev/null | awk 'NR == 1 { print $2 }')"
+	printf '  %-20s port=%-6s endpoint=%s\n' "$iface" "$port" "${endpoint:--}"
+done
+
+echo
+echo "config:"
+uci show awg_path_optimizer 2>/dev/null || true
+
+echo
+echo "recent log:"
+logread 2>/dev/null | grep 'awg-path-opt' | tail -n 20

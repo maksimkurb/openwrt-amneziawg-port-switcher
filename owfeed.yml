@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://owfeed.org/schema/v1.json
+version: 1
+
+feed:
+  name: awg-path-optimizer
+  url: https://example.invalid/awg-path-optimizer
+  title: AWG Path Optimizer
+
+releases:
+  - line: "25.12"
+    default: true
+    format: apk
+
+packages:
+  - name: awg-path-optimizer
+    releases: ["25.12"]
+    build: mkpkg
+    arch: noarch
+    version-from: file:./VERSION
+    files: ./package/root
+    description: "Automatically selects a healthier AmneziaWG UDP source port/path."
+    depends:
+      - amneziawg-tools
+      - ucode
+      - ucode-mod-fs
+      - ucode-mod-uci
+    conffiles:
+      - /etc/config/awg_path_optimizer

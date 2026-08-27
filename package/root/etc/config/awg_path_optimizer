@@ -1,0 +1,46 @@
+config optimizer 'main'
+	option enabled '1'
+
+	# Seconds between normal health checks.
+	option check_interval '60'
+
+	# Ping samples during a normal health check.
+	option check_count '5'
+
+	# Ping samples for each candidate listen port.
+	option scan_count '8'
+
+	# Test base_port .. base_port + candidate_count - 1.
+	option candidate_count '5'
+
+	# Re-scan after this percentage of packet loss.
+	option loss_trigger '20'
+
+	# Re-scan if RTT exceeds the best measured RTT by this many ms.
+	option rtt_trigger_ms '25'
+
+	# Require this many consecutive degraded health checks.
+	option bad_checks_required '2'
+
+	# Minimum seconds between scans.
+	option scan_cooldown '300'
+
+	# 0 disables periodic scans while healthy.
+	option periodic_rescan '0'
+
+	# Delay after changing listen-port before probing, in milliseconds.
+	option settle_ms '300'
+
+
+# Optional per-tunnel override. The section name must equal the AWG interface name.
+#
+# config tunnel 'vpn_servitro'
+#	option enabled '1'
+#	option target '10.9.9.1'
+#	option base_port '54001'
+#
+# "force 1" bypasses automatic client-tunnel detection. Use only for a client
+# tunnel: changing the listen port of a multi-peer AWG server is intentionally
+# not automatic.
+#
+#	option force '1'
