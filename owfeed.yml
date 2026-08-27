@@ -3,7 +3,7 @@ version: 1
 
 feed:
   name: awg-path-optimizer
-  url: https://example.invalid/awg-path-optimizer
+  url: https://github.com/maksimkurb/openwrt-amneziawg-port-switcher
   title: AWG Path Optimizer
 
 releases:
