@@ -24,7 +24,7 @@ packages:
     files: ./package/root
     description: "Automatically selects a healthier AmneziaWG UDP source port/path."
     depends:
-      - amneziawg-tools
+      # - amneziawg-tools
       - ucode
       - ucode-mod-fs
       - ucode-mod-uci
