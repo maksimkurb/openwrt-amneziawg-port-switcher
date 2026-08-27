@@ -1,4 +1,4 @@
-name: Build APK
+name: Build and publish feed
 
 on:
   push:
@@ -7,43 +7,40 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  check:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      actions: read
+    uses: owfeed/owfeed/.github/workflows/feed.yml@v0.5.0
+    with:
+      owfeed-version: v0.5.0
+      dry-run: true
+      smoke-releases: "25.12"
+      pre-build: |
+        test -x package/root/etc/init.d/awg-path-optimizer
+        test -x package/root/usr/sbin/awg-path-optimizer-status
+        sh -n package/root/etc/init.d/awg-path-optimizer
+        sh -n package/root/usr/sbin/awg-path-optimizer-status
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install owfeed
-        uses: owfeed/owfeed/setup@v0.5.0
-        with:
-          version: v0.5.0
-
-      - name: Validate package
-        run: |
-          set -euo pipefail
-          test -x package/root/etc/init.d/awg-path-optimizer
-          test -x package/root/usr/sbin/awg-path-optimizer-status
-          sh -n package/root/etc/init.d/awg-path-optimizer
-          sh -n package/root/usr/sbin/awg-path-optimizer-status
-          owfeed --frozen-lock check
-
-      - name: Build clean APK artifact
-        run: |
-          set -euo pipefail
-          rm -rf dist out
-          owfeed --frozen-lock build
-          test -n "$(find dist/noarch -maxdepth 1 -type f -name 'awg-path-optimizer-*.apk' -print -quit)"
-          ls -lh dist/noarch/*.apk
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: awg-path-optimizer-apk
-          path: dist/noarch/awg-path-optimizer-*.apk
-          if-no-files-found: error
-          retention-days: 30
+  publish:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      actions: read
+    uses: owfeed/owfeed/.github/workflows/feed.yml@v0.5.0
+    with:
+      owfeed-version: v0.5.0
+      smoke-releases: "25.12"
+      pre-build: |
+        test -x package/root/etc/init.d/awg-path-optimizer
+        test -x package/root/usr/sbin/awg-path-optimizer-status
+        sh -n package/root/etc/init.d/awg-path-optimizer
+        sh -n package/root/usr/sbin/awg-path-optimizer-status
+    secrets:
+      sign-key: ${{ secrets.OPENWRT_APK_SIGNING_KEY }}

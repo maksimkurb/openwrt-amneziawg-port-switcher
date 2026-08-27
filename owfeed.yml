@@ -3,8 +3,11 @@ version: 1
 
 feed:
   name: awg-path-optimizer
-  url: https://github.com/maksimkurb/openwrt-amneziawg-port-switcher
+  url: https://maksimkurb.github.io/openwrt-amneziawg-port-switcher
   title: AWG Path Optimizer
+
+publish:
+  - target: github-pages
 
 releases:
   - line: "25.12"
@@ -17,6 +20,7 @@ packages:
     build: mkpkg
     arch: noarch
     version-from: file:./VERSION
+    url: https://github.com/maksimkurb/openwrt-amneziawg-port-switcher
     files: ./package/root
     description: "Automatically selects a healthier AmneziaWG UDP source port/path."
     depends:

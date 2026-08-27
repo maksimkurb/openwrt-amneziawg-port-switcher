@@ -103,25 +103,24 @@ Dependencies:
 
 The workflow uses `owfeed/owfeed/setup@v0.5.0`.
 
-`owfeed check` validates the package using throwaway keys. Then the workflow
-removes the check output and runs a clean `owfeed build`, uploading:
+Pull requests run the complete owfeed pipeline with throwaway keys. Pushes and
+manual runs build the feed, sign it with the private key in the
+`OPENWRT_APK_SIGNING_KEY` GitHub Actions secret, index it, and publish it to
+GitHub Pages at:
 
 ```text
-dist/noarch/awg-path-optimizer-<version>.apk
+https://maksimkurb.github.io/openwrt-amneziawg-port-switcher
 ```
 
-as the `awg-path-optimizer-apk` Actions artifact.
-
-The artifact produced by this simple build workflow is not signed with your own
-persistent key. For direct local testing:
+The signing key is available only in the publish job; it never reaches the
+build job or pull requests. The workflow also smoke-tests OpenWrt 25.12 before
+deployment. For direct local testing:
 
 ```sh
 apk add --allow-untrusted ./awg-path-optimizer-0.1.0-r1.apk
 ```
 
-For public distribution, add an EC signing key and use `owfeed sign` or
-owfeed's reusable author-side `package.yml` release workflow instead of asking
-users to use `--allow-untrusted`.
+Install the corresponding public key from the feed on OpenWrt before using it.
 
 ## Update version
 
