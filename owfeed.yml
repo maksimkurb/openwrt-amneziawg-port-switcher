@@ -30,3 +30,14 @@ packages:
       - ucode-mod-uci
     conffiles:
       - /etc/config/awg_path_optimizer
+  - name: luci-app-awg-path-optimizer
+    releases: ["25.12"]
+    build: mkpkg
+    arch: noarch
+    version-from: file:./VERSION
+    url: https://github.com/maksimkurb/openwrt-amneziawg-port-switcher
+    files: ./luci-app-awg-path-optimizer/root
+    description: "LuCI status and controls for AWG Path Optimizer."
+    depends:
+      - awg-path-optimizer
+      - luci-base

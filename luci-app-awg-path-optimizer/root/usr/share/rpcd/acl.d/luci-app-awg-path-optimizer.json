@@ -1,0 +1,11 @@
+{
+	"luci-app-awg-path-optimizer": {
+		"description": "Grant access to the AWG Path Optimizer LuCI page",
+		"read": {
+			"uci": [ "awg_path_optimizer" ]
+		},
+		"write": {
+			"uci": [ "awg_path_optimizer" ]
+		}
+	}
+}

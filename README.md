@@ -10,12 +10,14 @@ packet loss while the server, tunnel crypto, and OpenWrt interface remain health
 ## Install
 
 On OpenWrt 25.12+, subscribe the router to the package feed, then install the
-package:
+packages:
 
 ```sh
 wget -qO- https://maksimkurb.github.io/openwrt-amneziawg-port-switcher/subscribe.sh | sh
-apk add awg-path-optimizer
+apk add awg-path-optimizer luci-app-awg-path-optimizer
 ```
+
+The status and controls page is under **Services → AWG Path Optimizer**.
 
 ## Safety model
 

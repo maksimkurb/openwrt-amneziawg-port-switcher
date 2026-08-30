@@ -1,0 +1,25 @@
+{
+	"admin/services/awg-path-optimizer": {
+		"title": "AWG Path Optimizer",
+		"order": 60,
+		"action": {
+			"type": "function",
+			"module": "luci.controller.awg_path_optimizer",
+			"function": "index"
+		},
+		"depends": {
+			"acl": [ "luci-app-awg-path-optimizer" ]
+		}
+	},
+	"admin/services/awg-path-optimizer/action/*": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.awg_path_optimizer",
+			"function": "action",
+			"post": true
+		},
+		"depends": {
+			"acl": [ "luci-app-awg-path-optimizer" ]
+		}
+	}
+}

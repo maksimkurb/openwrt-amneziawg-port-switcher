@@ -23,6 +23,9 @@ jobs:
       pre-build: |
         test -x package/root/etc/init.d/awg-path-optimizer
         test -x package/root/usr/sbin/awg-path-optimizer-status
+        test -f luci-app-awg-path-optimizer/root/usr/share/luci/menu.d/luci-app-awg-path-optimizer.json
+        test -f luci-app-awg-path-optimizer/root/usr/share/ucode/luci/controller/awg_path_optimizer.uc
+        test -f luci-app-awg-path-optimizer/root/usr/share/ucode/luci/template/awg_path_optimizer/index.ut
         sh -n package/root/etc/init.d/awg-path-optimizer
         sh -n package/root/usr/sbin/awg-path-optimizer-status
 
@@ -40,6 +43,9 @@ jobs:
       pre-build: |
         test -x package/root/etc/init.d/awg-path-optimizer
         test -x package/root/usr/sbin/awg-path-optimizer-status
+        test -f luci-app-awg-path-optimizer/root/usr/share/luci/menu.d/luci-app-awg-path-optimizer.json
+        test -f luci-app-awg-path-optimizer/root/usr/share/ucode/luci/controller/awg_path_optimizer.uc
+        test -f luci-app-awg-path-optimizer/root/usr/share/ucode/luci/template/awg_path_optimizer/index.ut
         sh -n package/root/etc/init.d/awg-path-optimizer
         sh -n package/root/usr/sbin/awg-path-optimizer-status
     secrets:
