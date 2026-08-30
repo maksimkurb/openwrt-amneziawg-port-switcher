@@ -36,18 +36,18 @@ function state() {
 		recent_log: command("logread | grep 'awg-path-opt' | tail -n 20")
 	};
 }
-function render(env, message) {
+function render(message) {
 	include('awg_path_optimizer/index', {
 		...state(),
 		message,
-		action_base: env.dispatcher.build_url('admin/services/awg-path-optimizer/action')
+		action_base: http.getenv('SCRIPT_NAME') + '/admin/services/awg-path-optimizer/action'
 	});
 }
 return {
-	index: function(env) {
-		render(env);
+	index: function() {
+		render();
 	},
-	action: function(env, action) {
+	action: function(_env, action) {
 		let message;
 		if (action == 'start' || action == 'stop' || action == 'recheck') {
 			let command = action == 'recheck' ? 'restart' : action;
@@ -56,8 +56,8 @@ return {
 				'Service ' + command + ' failed.';
 		}
 		else if (action == 'set-port') {
-			let iface = env.http.formvalue('iface');
-			let port = int(env.http.formvalue('port'));
+			let iface = http.formvalue('iface');
+			let port = int(http.formvalue('port'));
 			if (!valid_interface(iface))
 				message = 'Unknown interface.';
 			else if (port < 1 || port > 65535)
@@ -70,6 +70,6 @@ return {
 		else {
 			message = 'Unknown action.';
 		}
-		render(env, message);
+		render(message);
 	}
 };
