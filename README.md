@@ -7,19 +7,31 @@ flow-hash/ECMP paths.
 It was built for the case where changing an AWG source port changes RTT and/or
 packet loss while the server, tunnel crypto, and OpenWrt interface remain healthy.
 
+## Install
+
+On OpenWrt 25.12+, subscribe the router to the package feed, then install the
+package:
+
+```sh
+wget -qO- https://maksimkurb.github.io/openwrt-amneziawg-port-switcher/subscribe.sh | sh
+apk add awg-path-optimizer
+```
+
 ## Safety model
 
 The service automatically touches an interface only when all of these are true:
 
 - it is returned by `awg show interfaces`;
 - the link is UP;
-- it has exactly one peer;
-- that peer has an endpoint;
+- its first peer has an endpoint (or `peer_ip` selects a peer by endpoint IP);
 - its AllowedIPs look like a default-route client:
   `0.0.0.0/0`, `0.0.0.0/1 + 128.0.0.0/1`, `::/0`, or
   `::/1 + 8000::/1`.
 
-Multi-peer/server interfaces are not optimized automatically.
+On multi-peer interfaces the first peer is selected by default. Set `peer_ip`
+to select a particular endpoint IP; default-route detection then uses only that
+peer's AllowedIPs. Multi-peer/server interfaces still need `force='1'` unless
+the selected peer is a default-route client.
 
 For a non-standard client tunnel, add a named UCI section matching the interface:
 
@@ -28,6 +40,8 @@ uci set awg_path_optimizer.vpn_servitro=tunnel
 uci set awg_path_optimizer.vpn_servitro.force='1'
 uci set awg_path_optimizer.vpn_servitro.target='10.9.9.1'
 uci set awg_path_optimizer.vpn_servitro.base_port='54001'
+# Optional: select a peer by its endpoint IP instead of the first peer.
+uci set awg_path_optimizer.vpn_servitro.peer_ip='203.0.113.10'
 uci commit awg_path_optimizer
 /etc/init.d/awg-path-optimizer restart
 ```

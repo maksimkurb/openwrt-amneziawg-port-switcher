@@ -141,30 +141,41 @@ function is_link_up(iface) {
 	return r.rc == 0 && match(r.out, /[<,]UP[,>]/) != null;
 }
 
-function get_peer_count(iface) {
-	let r = run(["awg", "show", iface, "peers"]);
-
-	return r.rc == 0 ? length(words(r.out)) : 0;
-}
-
-function get_endpoint(iface) {
+function get_peer(iface) {
 	let r = run(["awg", "show", iface, "endpoints"]);
 
 	if (r.rc != 0)
 		return null;
 
 	let w = words(r.out);
+	let wanted_ip = cfg(iface, "peer_ip", "");
 
-	if (length(w) < 2 || w[1] == "(none)")
-		return null;
+	for (let i = 0; i + 1 < length(w); i += 2) {
+		let endpoint = w[i + 1];
+		let m = match(endpoint, /^\[([0-9A-Fa-f:.]+)\]:[0-9]+$/) ||
+			match(endpoint, /^([0-9.]+):[0-9]+$/);
 
-	return w[1];
+		if (!length(wanted_ip) || (m && m[1] == wanted_ip))
+			return { key: w[i], endpoint: endpoint };
+	}
+
+	return null;
 }
 
-function get_allowed_words(iface) {
+function get_allowed_words(iface, peer) {
 	let r = run(["awg", "show", iface, "allowed-ips"]);
 
-	return r.rc == 0 ? words(r.out) : [];
+	if (r.rc != 0)
+		return [];
+
+	let w = words(r.out);
+
+	for (let i = 0; i < length(w); i++) {
+		if (w[i] == peer.key)
+			return i + 1 < length(w) ? split(w[i + 1], ",") : [];
+	}
+
+	return [];
 }
 
 function client_skip_reason(iface) {
@@ -174,18 +185,20 @@ function client_skip_reason(iface) {
 	if (!is_link_up(iface))
 		return "link is not UP";
 
-	let peers = get_peer_count(iface);
+	let peer = get_peer(iface);
 
-	if (peers != 1)
-		return "peer count is " + peers + " (need exactly 1)";
+	if (peer == null)
+		return length(cfg(iface, "peer_ip", "")) ?
+			"peer IP " + cfg(iface, "peer_ip", "") + " not found" :
+			"no peers";
 
-	if (get_endpoint(iface) == null)
+	if (peer.endpoint == "(none)")
 		return "peer has no endpoint";
 
 	if (cfg(iface, "force", "0") == "1")
 		return null;
 
-	let a = get_allowed_words(iface);
+	let a = get_allowed_words(iface, peer);
 
 	let default4 =
 		contains(a, "0.0.0.0/0") ||
