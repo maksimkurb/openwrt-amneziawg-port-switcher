@@ -19,6 +19,34 @@ apk add awg-path-optimizer luci-app-awg-path-optimizer
 
 The status and controls page is under **Services → AWG Path Optimizer**.
 
+## LuCI
+
+luci-app-awg-path-optimizer shows the current service state, AWG interfaces,
+listen ports, first-peer endpoints, and recent optimizer logs. The page
+refreshes every 10 seconds and can start, stop, force a fresh optimizer pass,
+or change an interface runtime listen port.
+
+## Defaults
+
+| Option | Default | Description |
+|---|---|---|
+| main.enabled | 1 | Starts the service at boot. |
+| main.check_interval | 60 seconds | Time between normal health checks. |
+| main.check_count | 5 | Ping samples in a health check. |
+| main.scan_count | 8 | Ping samples for each candidate port. |
+| main.candidate_count | 5 | Consecutive source ports to test. |
+| main.loss_trigger | 20% | Loss percentage that marks a path degraded. |
+| main.rtt_trigger_ms | 25 ms | RTT increase over the best path that marks it degraded. |
+| main.bad_checks_required | 2 | Consecutive degraded checks required before rescanning. |
+| main.scan_cooldown | 300 seconds | Minimum time between scans. |
+| main.periodic_rescan | 0 | Healthy-path rescan interval; 0 disables it. |
+| main.settle_ms | 300 ms | Wait after changing port before probing. |
+| tunnel.enabled | 1 | Enables this interface for optimization. |
+| tunnel.target | automatic | Ping destination; inferred tunnel gateway, then 1.1.1.1. |
+| tunnel.base_port | automatic | Network configured port, otherwise current runtime port. |
+| tunnel.peer_ip | first peer | Selects a peer by endpoint IP when set. |
+| tunnel.force | 0 | Bypasses default-route client detection. |
+
 ## Safety model
 
 The service automatically touches an interface only when all of these are true:
@@ -34,6 +62,14 @@ On multi-peer interfaces the first peer is selected by default. Set `peer_ip`
 to select a particular endpoint IP; default-route detection then uses only that
 peer's AllowedIPs. Multi-peer/server interfaces still need `force='1'` unless
 the selected peer is a default-route client.
+
+For a tunnel that is intentionally not a default-route client, force=1 is
+required:
+
+    uci set awg_path_optimizer.vpn_example=tunnel
+    uci set awg_path_optimizer.vpn_example.force='1'
+    uci commit awg_path_optimizer
+    /etc/init.d/awg-path-optimizer restart
 
 For a non-standard client tunnel, add a named UCI section matching the interface:
 

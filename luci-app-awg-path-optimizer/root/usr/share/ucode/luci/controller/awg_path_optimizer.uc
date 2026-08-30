@@ -47,29 +47,22 @@ return {
 	index: function() {
 		render();
 	},
-	action: function(_env, action) {
-		let message;
+	action: function() {
+		let action = http.formvalue('action');
 		if (action == 'start' || action == 'stop' || action == 'recheck') {
 			let command = action == 'recheck' ? 'restart' : action;
-			message = system(SERVICE + ' ' + command) == 0 ?
-				'Service ' + command + ' requested.' :
-				'Service ' + command + ' failed.';
+			system(SERVICE + ' ' + command);
 		}
 		else if (action == 'set-port') {
 			let iface = http.formvalue('iface');
 			let port = int(http.formvalue('port'));
 			if (!valid_interface(iface))
-				message = 'Unknown interface.';
+				return http.redirect(http.getenv('SCRIPT_NAME') + '/admin/services/awg-path-optimizer');
 			else if (port < 1 || port > 65535)
-				message = 'Port must be between 1 and 65535.';
+				return http.redirect(http.getenv('SCRIPT_NAME') + '/admin/services/awg-path-optimizer');
 			else
-				message = system('awg set ' + iface + ' listen-port ' + port) == 0 ?
-					iface + ': listen port changed to ' + port + '.' :
-					iface + ': failed to change listen port.';
+				system('awg set ' + iface + ' listen-port ' + port);
 		}
-		else {
-			message = 'Unknown action.';
-		}
-		render(message);
+		http.redirect(http.getenv('SCRIPT_NAME') + '/admin/services/awg-path-optimizer');
 	}
 };

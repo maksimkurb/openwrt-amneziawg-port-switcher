@@ -11,7 +11,7 @@
 			"acl": [ "luci-app-awg-path-optimizer" ]
 		}
 	},
-	"admin/services/awg-path-optimizer/action/*": {
+	"admin/services/awg-path-optimizer/action": {
 		"action": {
 			"type": "function",
 			"module": "luci.controller.awg_path_optimizer",

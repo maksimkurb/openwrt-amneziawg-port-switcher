@@ -1,4 +1,5 @@
 {% include('header', { }) %}
+<meta http-equiv="refresh" content="10" />
 <div class="cbi-map">
 	<h2 name="content">{{ _('AWG Path Optimizer') }}</h2>
 	<p>{{ _('Service status:') }} <strong>{{ running ? _('running') : _('stopped') }}</strong></p>
@@ -6,16 +7,19 @@
 		<div class="alert-message">{{ entityencode(message) }}</div>
 	{% endif %}
 	<div class="cbi-page-actions">
-		<form method="post" action="{{ entityencode(action_base) }}/start" style="display:inline">
+		<form method="post" action="{{ entityencode(action_base) }}" style="display:inline">
 			<input type="hidden" name="token" value="{{ entityencode(ctx.authtoken) }}" />
+			<input type="hidden" name="action" value="start" />
 			<input class="cbi-button cbi-button-apply" type="submit" value="{{ _('Start') }}" />
 		</form>
-		<form method="post" action="{{ entityencode(action_base) }}/stop" style="display:inline">
+		<form method="post" action="{{ entityencode(action_base) }}" style="display:inline">
 			<input type="hidden" name="token" value="{{ entityencode(ctx.authtoken) }}" />
+			<input type="hidden" name="action" value="stop" />
 			<input class="cbi-button cbi-button-reset" type="submit" value="{{ _('Stop') }}" />
 		</form>
-		<form method="post" action="{{ entityencode(action_base) }}/recheck" style="display:inline">
+		<form method="post" action="{{ entityencode(action_base) }}" style="display:inline">
 			<input type="hidden" name="token" value="{{ entityencode(ctx.authtoken) }}" />
+			<input type="hidden" name="action" value="recheck" />
 			<input class="cbi-button cbi-button-action" type="submit" value="{{ _('Force recheck') }}" />
 		</form>
 	</div>
@@ -34,8 +38,9 @@
 					<div class="td">{{ entityencode(iface.port) }}</div>
 					<div class="td">{{ entityencode(iface.endpoint) }}</div>
 					<div class="td">
-						<form method="post" action="{{ entityencode(action_base) }}/set-port">
+						<form method="post" action="{{ entityencode(action_base) }}">
 							<input type="hidden" name="token" value="{{ entityencode(ctx.authtoken) }}" />
+							<input type="hidden" name="action" value="set-port" />
 							<input type="hidden" name="iface" value="{{ entityencode(iface.name) }}" />
 							<input type="number" name="port" min="1" max="65535" value="{{ entityencode(iface.port) }}" />
 							<input class="cbi-button cbi-button-action" type="submit" value="{{ _('Set') }}" />
