@@ -37,7 +37,7 @@ function state() {
 	};
 }
 function render(env, message) {
-	env.include('awg_path_optimizer/index', {
+	include('awg_path_optimizer/index', {
 		...state(),
 		message,
 		action_base: env.dispatcher.build_url('admin/services/awg-path-optimizer/action')
